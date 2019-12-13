@@ -9,5 +9,7 @@ def random_string(length=4096):
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.connect((sys.argv[1], 4000))
 
+msg = random_string().encode()
+
 while True:
-    sock.send(random_string().encode())
+    sock.send(msg)
