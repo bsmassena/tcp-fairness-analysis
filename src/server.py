@@ -3,9 +3,6 @@ import csv
 import time
 from threading import Thread
 import numpy as np
-import matplotlib.pyplot as plt
-
-COLORS = ['b', 'g', 'r']
 
 def process_connection(sock, addr, results):
     bytes_received = 0
@@ -23,18 +20,21 @@ def process_connection(sock, addr, results):
         if not data: break
         if time.time() - start <= 1: continue
 
-        ys.append(bytes_received*8/1000000)
+        ys.append(bytes_received*8)
         
         print("{} Mb/s".format((bytes_received*8)/1000000.0))
         start = time.time()
         bytes_received = 0
 
-def plot(results):
-    while(True):
-        plt.clf()
-        for i in range(len(results)):
-            plt.plot(results[i], color=COLORS[i])
-        plt.pause(0.001)
+    print("Salva arquivo")
+    print(addr[0])
+    print(addr[1])
+
+    filename = 'csv/{}_{}.csv'.format(addr[0], addr[1])
+    wtr = csv.writer(open (filename, 'w'), delimiter=',', lineterminator='\n')
+    wtr.writerow(['Time', 'b/s', 'Mb/s'])
+    for i in range(len(ys)):
+        wtr.writerow ([i, ys[i], ys[i]/1000000])
 
 
 HOST = ('', 4000)
@@ -42,7 +42,6 @@ server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(HOST)
 
 results = []
-Thread(target=plot, args=[results]).start()
 
 while True:
     server.listen(1)
